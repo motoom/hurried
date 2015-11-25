@@ -2,18 +2,18 @@
 #include <stdlib.h>
 
 char *template = " \n\
-	$$ says: 'Are you going to the grocery?'\n\
-	$$ says: 'Yes, I want to buy these articles:'\n\
-	{{\
-	 - a $$\n\
-	}}\
-	$$ says: 'Ok, cya lat0rz alligat0rz!'\n\
-	";
+$$ says: 'Are you going to the grocery?'\n\
+$$ says: 'Yes, I want to buy some fruits:'\n\
+{{\
+- a $$\n\
+}}\
+$$ says: 'Ok, cya lat0rz alligat0rz!'\n\
+";
 
 
 typedef struct Node {
 	char *str; // Initialize either 'str' or 'list', but not both. The other must be NULL.
-	struct Node *list;
+	struct Node *list; // A Node with both str=NULL and list=NULL can be used as a special representation of an empty list.
 	struct Node *next; // Pointer to next node, NULL if this is the last node in the list.
 	} Node;
 
@@ -22,9 +22,14 @@ char *expandrecursive(char *s, Node *vars, int level)
 {
 	char *anchor=s;
 	
+	int mute=0;
+	if (!vars->str && !vars->list) 
+		mute=1;
+		
 	while(*s) {
 		if (*s=='$' && *(s+1)=='$') {
-			printf("%s", vars->str);
+			if (!mute)
+				printf("%s", vars->str);
 			vars = vars->next;
 			s+=2;
 			}
@@ -39,7 +44,8 @@ char *expandrecursive(char *s, Node *vars, int level)
 				return s+2;
 			}
 		else {
-			printf("%c", *s);
+			if (!mute)
+				printf("%c", *s);
 			s++;
 			}
 		}
@@ -75,6 +81,7 @@ int main()
 	bob->str="Bob";
 	end->next=bob; end=bob;	
 
+		/*
 		Node *lemon=(Node *)calloc(1, sizeof(Node));
 		lemon->str="lemon";
 		//
@@ -83,7 +90,11 @@ int main()
 		Node *banana=(Node *)calloc(1, sizeof(Node));
 		banana->str="banana";
 		sublistend->next=banana; sublistend=banana;
-
+		*/
+		
+		Node *dummy=(Node *)calloc(1, sizeof(Node));
+		Node *subliststart=dummy;
+		
 	Node *articles=(Node *)calloc(1, sizeof(Node));
 	articles->list=subliststart;
 	end->next=articles; end=articles;	
