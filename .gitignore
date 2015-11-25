@@ -1,3 +1,5 @@
+*.tmproj
+
 # Object files
 *.o
 *.ko
